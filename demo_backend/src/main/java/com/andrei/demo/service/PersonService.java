@@ -1,5 +1,6 @@
 package com.andrei.demo.service;
 
+import com.andrei.demo.config.DuplicateEmailException;
 import com.andrei.demo.config.ValidationException;
 import com.andrei.demo.model.Person;
 import com.andrei.demo.model.PersonCreateDTO;
@@ -21,6 +22,11 @@ public class PersonService {
     }
 
     public Person addPerson(PersonCreateDTO personDTO) {
+
+        if (personRepository.existsByEmail(personDTO.getEmail())) {
+            throw new DuplicateEmailException("This email is already in use.");
+        }
+
         Person person = new Person();
 
         person.setName(personDTO.getName());
@@ -46,21 +52,6 @@ public class PersonService {
         existingPerson.setPassword(person.getPassword());
 
         return personRepository.save(existingPerson);
-    }
-
-    public Person updatePerson2(UUID uuid, Person person) throws ValidationException{
-        return personRepository
-                        .findById(uuid)
-                        .map(existingPerson -> {
-                            existingPerson.setName(person.getName());
-                            existingPerson.setAge(person.getAge());
-                            existingPerson.setEmail(person.getEmail());
-                            existingPerson.setPassword(person.getPassword());
-                            return personRepository.save(existingPerson);
-                        })
-                        .orElseThrow(
-                                () -> new ValidationException("Person with id " + uuid + " not found")
-                        );
     }
 
     public void deletePerson(UUID uuid) {

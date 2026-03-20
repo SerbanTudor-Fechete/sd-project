@@ -31,5 +31,15 @@ public class GlobalExceptionHandler {
 
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DuplicateEmailException.class)
+    public Map<String, String> handleDuplicateEmailException(DuplicateEmailException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("email", ex.getMessage());
+        log.error("Duplicate Email error: {}", errorMap);
+        return errorMap;
+    }
+
 }
 

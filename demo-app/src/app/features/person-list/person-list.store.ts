@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { CreatePersonDto, Person, UpdatePersonDto } from '../../models/person.model';
 import { PersonService } from '../../services/person.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class PersonListStore {
@@ -10,6 +11,7 @@ export class PersonListStore {
 
   readonly persons = signal<Person[]>([]);
   readonly hasError = signal(false);
+  readonly errorMessage = signal('');
   readonly isLoading = computed(() => this.pendingRequests() > 0);
 
   private beginRequest(): void {
@@ -20,8 +22,23 @@ export class PersonListStore {
     this.pendingRequests.update((count) => Math.max(0, count - 1));
   }
 
+  private handleBackendError(error: HttpErrorResponse): void {
+    this.hasError.set(true);
+    
+    if (error.status === 400 && error.error && typeof error.error === 'object') {
+      const validationMessages = Object.values(error.error);
+      if (validationMessages.length > 0) {
+        this.errorMessage.set(validationMessages.join(' • ')); 
+        return;
+      }
+    }
+    
+    this.errorMessage.set('An error occurred while saving.');
+  }
+
   load(): void {
     this.hasError.set(false);
+    this.errorMessage.set('');
     this.beginRequest();
     this.personService
       .getAll()
@@ -34,13 +51,14 @@ export class PersonListStore {
 
   create(dto: CreatePersonDto): void {
     this.hasError.set(false);
+    this.errorMessage.set('');
     this.beginRequest();
     this.personService
       .create(dto)
       .pipe(finalize(() => this.endRequest()))
       .subscribe({
         next: (created) => this.persons.update((list) => [...list, created]),
-        error: () => this.hasError.set(true),
+        error: (err: HttpErrorResponse) => this.handleBackendError(err),
       });
   }
 

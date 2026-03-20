@@ -1,8 +1,11 @@
 package com.andrei.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,4 +26,9 @@ public class Person {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Motorcycle> motorcycles = new ArrayList<>();
+
 }

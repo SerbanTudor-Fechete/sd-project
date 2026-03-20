@@ -1,0 +1,9 @@
+services:
+  postgres-db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=test-person
+      - POSTGRES_USER=test_oop
+      - POSTGRES_PASSWORD=test_oop
