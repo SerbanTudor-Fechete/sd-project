@@ -41,5 +41,13 @@ public class GlobalExceptionHandler {
         return errorMap;
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ValidationException.class)
+    public Map<String, String> handleCustomValidationException(ValidationException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        log.error("Custom Validation error: {}", errorMap);
+        return errorMap;
+    }
 }
 

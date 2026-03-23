@@ -1,5 +1,6 @@
 package com.andrei.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,10 +30,12 @@ public class Motorcycle {
     private String licensePlate;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "owner_id")
     private Person owner;
 
     @OneToMany(mappedBy = "motorcycle", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ServiceAppointment> appointments = new ArrayList<>();
 
 }
