@@ -1,1 +1,7 @@
-<router-outlet></router-outlet>
+@if (loginStore.role() === 'ADMIN') {
+  <app-admin-navbar></app-admin-navbar>
+}
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="appt-form" (ngSubmit)="submit()">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Schedule Date</mat-label>
+      <input matInput formControlName="scheduleDate" placeholder="YYYY-MM-DD" />
+      @if (form.controls.scheduleDate.hasError('required')) { <mat-error>Date is required.</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" placeholder="e.g., Oil Change" />
+      @if (form.controls.description.hasError('required')) { <mat-error>Description is required.</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Total Cost ($)</mat-label>
+      <input matInput type="number" step="0.01" formControlName="totalCost" />
+      @if (form.controls.totalCost.hasError('required')) { <mat-error>Cost is required.</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="PENDING">Pending</mat-option>
+        <mat-option value="IN_PROGRESS">In Progress</mat-option>
+        <mat-option value="COMPLETED">Completed</mat-option>
+        <mat-option value="CANCELLED">Cancelled</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Motorcycle</mat-label>
+      <mat-select formControlName="motorcycleId" placeholder="Select Motorcycle">
+        @for (moto of data.motorcycles; track moto.id) {
+          <mat-option [value]="moto.id">{{ moto.brand }} {{ moto.model }} ({{ moto.licensePlate }})</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.motorcycleId.hasError('required')) { <mat-error>Motorcycle is required.</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Used Parts</mat-label>
+      <mat-select formControlName="partIds" multiple placeholder="Select Parts (Optional)">
+        @for (part of data.parts; track part.id) {
+          <mat-option [value]="part.id">{{ part.name }} (${{ part.price }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="submit" form="appt-form">{{ data.submitLabel ?? 'Submit' }}</button>
+</mat-dialog-actions>

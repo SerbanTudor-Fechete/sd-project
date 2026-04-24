@@ -1,0 +1,100 @@
+<main class="content">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Manage Motorcycles</h1>
+      <p class="page-subtitle">View, filter, and manage the motorcycle fleet.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()" [disabled]="isLoading()">
+      <mat-icon>add</mat-icon> New Motorcycle
+    </button>
+  </header>
+
+  <mat-card class="filter-card">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Search Brand</mat-label>
+        <input matInput formControlName="brand" placeholder="e.g., Honda">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter Year</mat-label>
+        <input matInput formControlName="year" placeholder="e.g., 2023">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter Model</mat-label>
+        <input matInput formControlName="model" placeholder="e.g., Ninja 400">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Order By</mat-label>
+        <mat-select formControlName="sortBy" (selectionChange)="applyFilters()">
+          <mat-option value="brand">Brand (A-Z)</mat-option>
+          <mat-option value="manufactureYear">Year</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" type="submit">Apply</button>
+        <button mat-button type="button" (click)="clearFilters()">Clear</button>
+      </div>
+    </form>
+  </mat-card>
+
+  @if (isLoading()) {
+    <p class="loading-status" role="status" aria-live="polite">Loading motorcycles...</p>
+  }
+
+  @if (hasError()) {
+    <div class="error-alert" role="alert" aria-live="assertive">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      {{ errorMessage() || 'An error occurred while processing your request. Please try again.' }}
+    </div>
+  }
+
+  <div class="table-container" [class.is-busy]="isLoading()">
+    <table mat-table [dataSource]="filteredMotorcycles()">
+      
+      <ng-container matColumnDef="brand">
+        <th mat-header-cell *matHeaderCellDef>Brand</th>
+        <td mat-cell *matCellDef="let m">{{ m.brand }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="model">
+        <th mat-header-cell *matHeaderCellDef>Model</th>
+        <td mat-cell *matCellDef="let m">{{ m.model }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="manufactureYear">
+        <th mat-header-cell *matHeaderCellDef>Year</th>
+        <td mat-cell *matCellDef="let m">{{ m.manufactureYear }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="licensePlate">
+        <th mat-header-cell *matHeaderCellDef>Plate</th>
+        <td mat-cell *matCellDef="let m">{{ m.licensePlate }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let m">
+          <button mat-icon-button color="primary" (click)="openEditDialog(m)" [disabled]="isLoading()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" class="delete-btn" (click)="openDeleteDialog(m)" [disabled]="isLoading()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="no-data-cell">
+          No motorcycles found matching your criteria.
+        </td>
+      </tr>
+    </table>
+  </div>
+</main>

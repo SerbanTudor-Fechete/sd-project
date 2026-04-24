@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="part-form" (ngSubmit)="submit()">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Part Name</mat-label>
+      <input matInput formControlName="name" autocomplete="off" placeholder="e.g., Oil Filter" />
+      @if (form.controls.name.hasError('required')) {
+        <mat-error>Name is required.</mat-error>
+      } @else if (form.controls.name.hasError('minlength')) {
+        <mat-error>Name must be at least 2 characters.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Price ($)</mat-label>
+      <input matInput type="number" step="0.01" formControlName="price" autocomplete="off" placeholder="e.g., 29.99" />
+      @if (form.controls.price.hasError('required')) {
+        <mat-error>Price is required.</mat-error>
+      } @else if (form.controls.price.hasError('min')) {
+        <mat-error>Price must be greater than zero.</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="submit" form="part-form">{{ data.submitLabel ?? 'Submit' }}</button>
+</mat-dialog-actions>

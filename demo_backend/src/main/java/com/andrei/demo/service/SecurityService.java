@@ -16,15 +16,13 @@ public class SecurityService {
     public LoginResponse login(String email, String password) {
         Optional<Person> maybePerson = personRepository.findByEmail(email);
         if(maybePerson.isEmpty()) {
-            return new LoginResponse(
-                    false,
-                    null,
-                    "Person with email " + email + " not found"
-            );
+            return new LoginResponse(false, null, "Person with email " + email + " not found");
         }
         Person person = maybePerson.get();
         if(person.getPassword().equals(password)) {
-            return new LoginResponse(true, "ADMIN", null);
+            String dbRole = person.getRole().name();
+
+            return new LoginResponse(true, dbRole, null);
         } else {
             return new LoginResponse(false, null, "Incorrect password");
         }

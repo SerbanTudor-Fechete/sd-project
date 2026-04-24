@@ -4,6 +4,7 @@ import com.andrei.demo.config.DuplicateEmailException;
 import com.andrei.demo.config.ValidationException;
 import com.andrei.demo.model.Person;
 import com.andrei.demo.model.PersonCreateDTO;
+import com.andrei.demo.model.Role;
 import com.andrei.demo.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,12 @@ public class PersonService {
         person.setAge(personDTO.getAge());
         person.setEmail(personDTO.getEmail());
         person.setPassword(personDTO.getPassword());
+
+        if (personDTO.getRole() != null && personDTO.getRole().equalsIgnoreCase("ADMIN")) {
+            person.setRole(Role.ADMIN);
+        } else {
+            person.setRole(Role.CUSTOMER);
+        }
 
         return personRepository.save(person);
     }

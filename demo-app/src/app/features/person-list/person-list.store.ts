@@ -66,7 +66,12 @@ export class PersonListStore {
     const existing = this.persons().find((p) => p.id === id);
     if (!existing) return;
 
-    const payload: CreatePersonDto = { ...dto, password: existing.password };
+    const payload: CreatePersonDto = { 
+        ...dto, 
+        password: existing.password,
+        email: existing.email,
+        role: existing.role 
+    };
 
     this.hasError.set(false);
     this.beginRequest();

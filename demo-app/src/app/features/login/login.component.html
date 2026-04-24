@@ -1,8 +1,5 @@
 <main class="login-page" aria-labelledby="login-title">
   <mat-card class="login-card">
-    <h1 id="login-title">Sign in</h1>
-    <p class="subtitle">Enter your email and password to continue.</p>
-
     <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
@@ -48,4 +45,3 @@
     </form>
   </mat-card>
 </main>
-

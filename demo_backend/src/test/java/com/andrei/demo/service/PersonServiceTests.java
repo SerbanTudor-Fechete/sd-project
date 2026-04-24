@@ -1,7 +1,6 @@
 package com.andrei.demo.service;
 
 import com.andrei.demo.config.ValidationException;
-import com.andrei.demo.model.LoginResponse;
 import com.andrei.demo.model.Person;
 import com.andrei.demo.model.PersonCreateDTO;
 import com.andrei.demo.repository.PersonRepository;

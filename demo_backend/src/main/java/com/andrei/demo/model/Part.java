@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Part {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID uuid;
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;

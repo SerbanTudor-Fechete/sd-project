@@ -29,15 +29,15 @@ public class PartService {
         return partRepository.save(part);
     }
 
-    public void deletePart(UUID uuid) {
-        partRepository.deleteById(uuid);
+    public void deletePart(UUID id) {
+        partRepository.deleteById(id);
     }
 
-    public Part updatePart(UUID uuid, Part part) throws ValidationException {
-        Optional<Part> partOptional = partRepository.findById(uuid);
+    public Part updatePart(UUID id, Part part) throws ValidationException {
+        Optional<Part> partOptional = partRepository.findById(id);
 
         if(partOptional.isEmpty()) {
-            throw new ValidationException("Part with id " + uuid + " not found");
+            throw new ValidationException("Part with id " + id + " not found");
         }
 
         Part existingPart = partOptional.get();

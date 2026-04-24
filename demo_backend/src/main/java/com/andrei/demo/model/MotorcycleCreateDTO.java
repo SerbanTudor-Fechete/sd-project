@@ -1,8 +1,11 @@
 package com.andrei.demo.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Data
 public class MotorcycleCreateDTO {
@@ -19,4 +22,7 @@ public class MotorcycleCreateDTO {
     @NotBlank(message = "License plate is required")
     @Size(min = 7, max = 8, message = "License plate number is invalid")
     private String licensePlate;
+
+    @NotNull(message = "Owner ID is required")
+    private UUID ownerId;
 }

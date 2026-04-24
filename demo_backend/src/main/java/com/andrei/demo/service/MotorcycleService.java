@@ -3,26 +3,27 @@ package com.andrei.demo.service;
 import com.andrei.demo.config.ValidationException;
 import com.andrei.demo.model.Motorcycle;
 import com.andrei.demo.model.MotorcycleCreateDTO;
+import com.andrei.demo.model.Person;
 import com.andrei.demo.repository.MotorcycleRepository;
+import com.andrei.demo.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-
 
 @Service
 @AllArgsConstructor
 public class MotorcycleService {
     private final MotorcycleRepository motorcycleRepository;
+    private final PersonRepository personRepository;
 
     public List<Motorcycle> getMotorcycles() {
         return motorcycleRepository.findAll();
     }
 
-    public Motorcycle addMotorcycle (MotorcycleCreateDTO motorcycleCreateDTO) throws ValidationException {
+    public Motorcycle addMotorcycle(MotorcycleCreateDTO motorcycleCreateDTO) throws ValidationException {
         if (motorcycleRepository.existsByLicensePlate(motorcycleCreateDTO.getLicensePlate())) {
             throw new ValidationException("Motorcycle with license plate " + motorcycleCreateDTO.getLicensePlate() + " is already registered.");
         }
@@ -32,28 +33,35 @@ public class MotorcycleService {
             throw new ValidationException("Manufacture year cannot be in the future.");
         }
 
+        Person owner = personRepository.findById(motorcycleCreateDTO.getOwnerId())
+                .orElseThrow(() -> new ValidationException("Owner with id " + motorcycleCreateDTO.getOwnerId() + " not found."));
+
         Motorcycle motorcycle = new Motorcycle();
         motorcycle.setBrand(motorcycleCreateDTO.getBrand());
         motorcycle.setModel(motorcycleCreateDTO.getModel());
         motorcycle.setLicensePlate(motorcycleCreateDTO.getLicensePlate());
         motorcycle.setManufactureYear(motorcycleCreateDTO.getManufactureYear());
+        motorcycle.setOwner(owner);
 
         return motorcycleRepository.save(motorcycle);
     }
 
-    public void deleteMotorcycle(UUID id) { motorcycleRepository.deleteById(id); }
+    public void deleteMotorcycle(UUID id) {
+        motorcycleRepository.deleteById(id);
+    }
 
-    public Motorcycle updateMotorcycle(UUID uuid, Motorcycle motorcycle) throws ValidationException {
-        Optional<Motorcycle> motorcycleOptional = motorcycleRepository.findById(uuid);
+    public Motorcycle updateMotorcycle(UUID uuid, MotorcycleCreateDTO dto) throws ValidationException {
+        Motorcycle existingMotorcycle = motorcycleRepository.findById(uuid)
+                .orElseThrow(() -> new ValidationException("Motorcycle with id " + uuid + " not found"));
 
-        if(motorcycleOptional.isEmpty()) {
-            throw new ValidationException("Motorcycle with id " + uuid + " not found");
-        }
-        Motorcycle existingMotorcycle =  motorcycleOptional.get();
-        existingMotorcycle.setManufactureYear(motorcycle.getManufactureYear());
-        existingMotorcycle.setBrand(motorcycle.getBrand());
-        existingMotorcycle.setLicensePlate(motorcycle.getLicensePlate());
-        existingMotorcycle.setModel(motorcycle.getModel());
+        Person owner = personRepository.findById(dto.getOwnerId())
+                .orElseThrow(() -> new ValidationException("Owner with id " + dto.getOwnerId() + " not found."));
+
+        existingMotorcycle.setManufactureYear(dto.getManufactureYear());
+        existingMotorcycle.setBrand(dto.getBrand());
+        existingMotorcycle.setLicensePlate(dto.getLicensePlate());
+        existingMotorcycle.setModel(dto.getModel());
+        existingMotorcycle.setOwner(owner);
 
         return motorcycleRepository.save(existingMotorcycle);
     }

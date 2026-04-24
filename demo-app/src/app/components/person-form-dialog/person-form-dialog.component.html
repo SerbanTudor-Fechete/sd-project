@@ -56,6 +56,19 @@
         }
       </mat-form-field>
     }
+
+    @if (data.showRoleField) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role">
+          <mat-option value="CUSTOMER">Customer</mat-option>
+          <mat-option value="ADMIN">Admin</mat-option>
+        </mat-select>
+        @if (form.controls.role.hasError('required')) {
+          <mat-error>Role is required.</mat-error>
+        }
+      </mat-form-field>
+    }
   </form>
 </mat-dialog-content>
 
@@ -63,4 +76,3 @@
   <button mat-button type="button" (click)="cancel()">Cancel</button>
   <button mat-flat-button type="submit" form="person-form">{{ data.submitLabel ?? 'Submit' }}</button>
 </mat-dialog-actions>
-

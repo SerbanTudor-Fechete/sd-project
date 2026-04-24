@@ -29,13 +29,13 @@ public class ServiceAppointmentController {
     }
 
     @PostMapping("/appointment")
-    public ServiceAppointment addAppointment(@Valid @RequestBody ServiceAppointmentCreateDTO appointmentCreateDTO) {
+    public ServiceAppointment addAppointment(@Valid @RequestBody ServiceAppointmentCreateDTO appointmentCreateDTO) throws ValidationException {
         return appointmentService.addAppointment(appointmentCreateDTO);
     }
 
     @PutMapping("/appointment/{uuid}")
-    public ServiceAppointment updateAppointment(@PathVariable UUID uuid, @RequestBody ServiceAppointment appointment) throws ValidationException {
-        return appointmentService.updateAppointment(uuid, appointment);
+    public ServiceAppointment updateAppointment(@PathVariable UUID uuid, @RequestBody ServiceAppointmentCreateDTO appointmentCreateDTO) throws ValidationException {
+        return appointmentService.updateAppointment(uuid, appointmentCreateDTO);
     }
 
     @DeleteMapping("/appointment/{uuid}")

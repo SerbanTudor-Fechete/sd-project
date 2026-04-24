@@ -1,0 +1,70 @@
+<main class="content">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Service Appointments</h1>
+      <p class="page-subtitle">Schedule and update repair jobs.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()" [disabled]="isLoading()">
+      <mat-icon>add</mat-icon> Schedule
+    </button>
+  </header>
+
+  @if (isLoading()) {
+    <p class="loading-status" role="status" aria-live="polite">Loading appointments...</p>
+  }
+
+  @if (hasError()) {
+    <div class="error-alert" role="alert" aria-live="assertive">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      {{ errorMessage() || 'An error occurred while processing your request. Please try again.' }}
+    </div>
+  }
+
+  <div class="table-container" [class.is-busy]="isLoading()">
+    <table mat-table [dataSource]="appointments()">
+      
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let a">{{ a.scheduleDate }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let a">{{ a.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cost">
+        <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+        <td mat-cell *matCellDef="let a">${{ a.totalCost.toFixed(2) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let a">
+          <strong>{{ a.status.replace('_', ' ') }}</strong>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let a">
+          <button mat-icon-button color="primary" (click)="openEditDialog(a)" [disabled]="isLoading()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" class="delete-btn" (click)="openDeleteDialog(a)" [disabled]="isLoading()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="no-data-cell">
+          No appointments scheduled yet.
+        </td>
+      </tr>
+    </table>
+  </div>
+</main>

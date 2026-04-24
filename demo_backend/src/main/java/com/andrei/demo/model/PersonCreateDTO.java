@@ -23,6 +23,8 @@ public class PersonCreateDTO {
     @NotNull(message = "Age is required")
     private Integer age;
 
+    private String role;
+
     @NotBlank(message = "Email is required")
     private String email;
 }

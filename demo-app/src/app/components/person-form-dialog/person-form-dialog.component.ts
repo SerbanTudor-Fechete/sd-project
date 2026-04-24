@@ -10,11 +10,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 export interface PersonFormDialogData {
   title: string;
   submitLabel?: string;
   showPasswordField?: boolean;
+  showRoleField?: boolean;
   initialValue?: PersonFormInitialValue | null;
 }
 
@@ -23,12 +25,14 @@ export interface PersonFormValue {
   age: number;
   email: string;
   password?: string;
+  role?: string;
 }
 
 export interface PersonFormInitialValue {
   name: string;
   age: number;
   email: string;
+  role?: string; 
 }
 
 export type PersonFormDialogResult = PersonFormValue | undefined;
@@ -41,6 +45,7 @@ export type PersonFormDialogResult = PersonFormValue | undefined;
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatSelectModule, 
   ],
   templateUrl: './person-form-dialog.component.html',
   styleUrl: './person-form-dialog.component.scss',
@@ -58,6 +63,7 @@ export class PersonFormDialogComponent implements OnInit {
     age: [0, [Validators.required, Validators.min(18), Validators.max(200)]],
     email: ['', [Validators.required]],
     password: ['', []],
+    role: ['CUSTOMER', []], 
   });
 
   ngOnInit(): void {
@@ -66,10 +72,13 @@ export class PersonFormDialogComponent implements OnInit {
     }
 
     if (this.data.showPasswordField) {
-      this.form.controls.password.setValidators([
-        Validators.required,
-      ]);
+      this.form.controls.password.setValidators([Validators.required]);
       this.form.controls.password.updateValueAndValidity();
+    }
+
+    if (this.data.showRoleField) {
+      this.form.controls.role.setValidators([Validators.required]);
+      this.form.controls.role.updateValueAndValidity();
     }
   }
 
@@ -83,10 +92,17 @@ export class PersonFormDialogComponent implements OnInit {
       return;
     }
 
-    const { name, age, email, password } = this.form.getRawValue();
-    const result: PersonFormValue = this.data.showPasswordField
-      ? { name, age, email, password }
-      : { name, age, email };
+    const { name, age, email, password, role } = this.form.getRawValue();
+    
+    const result: PersonFormValue = { name, age, email };
+    
+    if (this.data.showPasswordField) {
+      result.password = password;
+    }
+    
+    if (this.data.showRoleField) {
+      result.role = role;
+    }
 
     this.dialogRef.close(result);
   }

@@ -10,6 +10,7 @@ import { LoginStore } from './login.store';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatCardModule,
@@ -50,8 +51,11 @@ export class LoginComponent {
           return;
         }
 
-        void this.router.navigate(['/people']);
+        if (response.role === 'ADMIN') {
+          void this.router.navigate(['/people']); 
+        } else {
+          void this.router.navigate(['/customer-dashboard']); 
+        }
       });
   }
 }
-

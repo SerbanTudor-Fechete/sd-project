@@ -27,6 +27,7 @@ public class ServiceAppointment {
     @Column(name = "totalcost", nullable = false)
     private Double totalCost;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
 
@@ -35,7 +36,8 @@ public class ServiceAppointment {
     @JsonIgnore
     private Motorcycle motorcycle;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinTable(name = "appointment_parts", joinColumns = @JoinColumn(name = "appointment_id"), inverseJoinColumns = @JoinColumn(name = "part_id"))
     private List<Part> partsUsed = new ArrayList<>();
 }

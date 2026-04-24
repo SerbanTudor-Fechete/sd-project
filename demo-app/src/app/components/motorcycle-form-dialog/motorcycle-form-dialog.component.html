@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="moto-form" (ngSubmit)="submit()">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Brand</mat-label>
+      <input matInput formControlName="brand" placeholder="e.g., Honda" />
+      @if (form.controls.brand.hasError('required')) {
+        <mat-error>Brand is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Model</mat-label>
+      <input matInput formControlName="model" placeholder="e.g., CBR600" />
+      @if (form.controls.model.hasError('required')) {
+        <mat-error>Model is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Manufacture Year</mat-label>
+      <input matInput formControlName="manufactureYear" placeholder="e.g., 2023" />
+      @if (form.controls.manufactureYear.hasError('required')) {
+        <mat-error>Manufacture year is required.</mat-error>
+      } @else if (form.controls.manufactureYear.hasError('pattern')) {
+        <mat-error>Year must be a 4-digit number.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>License Plate</mat-label>
+      <input matInput formControlName="licensePlate" placeholder="e.g., B123ABC" />
+      @if (form.controls.licensePlate.hasError('required')) {
+        <mat-error>License plate is required.</mat-error>
+      } @else if (form.controls.licensePlate.hasError('minlength') || form.controls.licensePlate.hasError('maxlength')) {
+        <mat-error>License plate must be 7 or 8 characters.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Owner</mat-label>
+      <mat-select formControlName="ownerId" placeholder="Select an Owner">
+        @for (owner of data.owners; track owner.id) {
+          <mat-option [value]="owner.id">{{ owner.name }} ({{ owner.email }})</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.ownerId.hasError('required')) {
+        <mat-error>You must assign an owner to the motorcycle.</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="submit" form="moto-form">{{ data.submitLabel ?? 'Submit' }}</button>
+</mat-dialog-actions>

@@ -32,9 +32,9 @@ public class MotorcycleController {
         return motorcycleService.addMotorcycle(motorcycleCreateDTO);
     }
     @PutMapping("/motorcycle/{uuid}")
-    public Motorcycle updateMotorcycle(@PathVariable UUID uuid, @RequestBody Motorcycle motorcycle)
+    public Motorcycle updateMotorcycle(@PathVariable UUID uuid, @RequestBody MotorcycleCreateDTO motorcycleCreateDTO)
         throws ValidationException {
-        return motorcycleService.updateMotorcycle(uuid, motorcycle);
+        return motorcycleService.updateMotorcycle(uuid, motorcycleCreateDTO);
     }
     @DeleteMapping("/motorcycle/{uuid}")
     public void deleteMotorcycle(@PathVariable UUID uuid) {

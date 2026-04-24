@@ -43,6 +43,7 @@ class SecurityServiceTests {
         Person person = new Person();
         person.setEmail(email);
         person.setPassword(password);
+        person.setRole(com.andrei.demo.model.Role.ADMIN);
 
         when(personRepository.findByEmail(email)).thenReturn(Optional.of(person));
         LoginResponse result = securityService.login(email, password);
@@ -58,7 +59,7 @@ class SecurityServiceTests {
         String password = "password";
         Person person = new Person();
         person.setEmail(email);
-        person.setPassword("wrongpassword");
+        person.setPassword("wrong password");
 
         when(personRepository.findByEmail(email)).thenReturn(Optional.of(person));
         LoginResponse result = securityService.login(email, password);

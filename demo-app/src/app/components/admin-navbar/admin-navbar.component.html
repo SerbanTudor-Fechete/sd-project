@@ -1,0 +1,14 @@
+<mat-toolbar color="primary" class="admin-navbar">
+  <span>Admin Dashboard</span>
+  
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/people" routerLinkActive="active-tab">Persons</a>
+  <a mat-button routerLink="/motorcycles" routerLinkActive="active-tab">Motorcycles</a>
+  <a mat-button routerLink="/parts" routerLinkActive="active-tab">Parts</a>
+  <a mat-button routerLink="/appointments" routerLinkActive="active-tab">Appointments</a>
+
+  <button mat-raised-button color="warn" (click)="logout()" class="logout-button">
+    Logout
+  </button>
+</mat-toolbar>
