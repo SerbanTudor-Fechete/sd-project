@@ -6,6 +6,7 @@ import com.andrei.demo.model.PartCreateDTO;
 import com.andrei.demo.service.PartService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @CrossOrigin
+@PreAuthorize("hasAuthority('ADMIN')")
 public class PartController {
 
     private final PartService partService;

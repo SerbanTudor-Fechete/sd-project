@@ -2,6 +2,7 @@ package com.andrei.demo.service;
 
 import com.andrei.demo.model.LoginResponse;
 import com.andrei.demo.model.Person;
+import com.andrei.demo.model.Role;
 import com.andrei.demo.repository.PersonRepository;
 import com.andrei.demo.util.JwtUtil;
 import com.andrei.demo.util.PasswordUtil;
@@ -52,6 +53,7 @@ class SecurityServiceTests {
         Person person = new Person();
         person.setEmail(email);
         person.setPassword("hashed-password");
+        person.setRole(Role.ADMIN);
 
         when(personRepository.findByEmail(email)).thenReturn(Optional.of(person));
         when(passwordUtil.checkPassword(password, person.getPassword())).thenReturn(true);

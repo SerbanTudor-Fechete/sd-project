@@ -1,7 +1,10 @@
 package com.andrei.demo.controller;
 
 import com.andrei.demo.model.Part;
+import com.andrei.demo.model.Person;
 import com.andrei.demo.repository.PartRepository;
+import com.andrei.demo.repository.PersonRepository;
+import com.andrei.demo.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +40,34 @@ public class PartControllerIntegrationTests {
     @Autowired
     private PartRepository partRepository;
 
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     private static final String FIXTURE_PATH = "src/test/resources/fixtures/";
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private String adminToken;
 
     @BeforeEach
     void setUp() throws Exception {
         partRepository.deleteAll();
+        personRepository.deleteAll();
         partRepository.flush();
+        personRepository.flush();
+
+        Person adminUser = new Person();
+        adminUser.setName("Admin User");
+        adminUser.setEmail("admin.part@test.com");
+        adminUser.setPassword("password");
+        adminUser.setAge(35);
+        adminUser.setRole(com.andrei.demo.model.Role.ADMIN);
+        adminUser = personRepository.save(adminUser);
+
+        adminToken = jwtUtil.createToken(adminUser);
+
         seedDatabase();
     }
 
@@ -59,7 +83,8 @@ public class PartControllerIntegrationTests {
 
     @Test
     void testGetParts() throws Exception {
-        mockMvc.perform(get("/part"))
+        mockMvc.perform(get("/part")
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
@@ -68,7 +93,8 @@ public class PartControllerIntegrationTests {
     void testGetPartById() throws Exception {
         Part savedPart = partRepository.findAll().getFirst();
 
-        mockMvc.perform(get("/part/" + savedPart.getId()))
+        mockMvc.perform(get("/part/" + savedPart.getId())
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedPart.getId().toString()))
                 .andExpect(jsonPath("$.name").value(savedPart.getName()));
@@ -79,6 +105,7 @@ public class PartControllerIntegrationTests {
         String newPartJson = loadFixture("valid_part.json");
 
         mockMvc.perform(post("/part")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newPartJson))
                 .andExpect(status().isOk())
@@ -92,6 +119,7 @@ public class PartControllerIntegrationTests {
         String invalidPartJson = loadFixture("invalid_part.json");
 
         mockMvc.perform(post("/part")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidPartJson))
                 .andExpect(status().isBadRequest());
@@ -103,6 +131,7 @@ public class PartControllerIntegrationTests {
         String updateJson = "{\"name\": \"Upgraded Brakes\", \"price\": 120.00}";
 
         mockMvc.perform(put("/part/" + savedPart.getId())
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateJson))
                 .andExpect(status().isOk())
@@ -115,6 +144,7 @@ public class PartControllerIntegrationTests {
         Part savedPart = partRepository.findAll().getFirst();
 
         mockMvc.perform(patch("/part/" + savedPart.getId() + "/price")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("99.99"))
                 .andExpect(status().isOk())
@@ -125,7 +155,8 @@ public class PartControllerIntegrationTests {
     void testDeletePart() throws Exception {
         Part savedPart = partRepository.findAll().getFirst();
 
-        mockMvc.perform(delete("/part/" + savedPart.getId()))
+        mockMvc.perform(delete("/part/" + savedPart.getId())
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
 
         assert(partRepository.findById(savedPart.getId()).isEmpty());

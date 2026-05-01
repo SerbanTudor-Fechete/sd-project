@@ -4,6 +4,7 @@ import com.andrei.demo.model.Motorcycle;
 import com.andrei.demo.model.Person;
 import com.andrei.demo.repository.MotorcycleRepository;
 import com.andrei.demo.repository.PersonRepository;
+import com.andrei.demo.util.JwtUtil;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +40,15 @@ public class MotorcycleControllerIntegrationTests {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     private static final String FIXTURE_PATH = "src/test/resources/fixtures/";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Person testOwner;
+
+    private String adminToken;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -59,6 +65,16 @@ public class MotorcycleControllerIntegrationTests {
         testOwner.setRole(com.andrei.demo.model.Role.CUSTOMER);
         testOwner = personRepository.save(testOwner);
 
+        Person adminUser = new Person();
+        adminUser.setName("Admin User");
+        adminUser.setEmail("admin.moto@test.com");
+        adminUser.setPassword("password");
+        adminUser.setAge(35);
+        adminUser.setRole(com.andrei.demo.model.Role.ADMIN);
+        adminUser = personRepository.save(adminUser);
+
+        adminToken = jwtUtil.createToken(adminUser);
+
         seedDatabase();
     }
 
@@ -72,7 +88,8 @@ public class MotorcycleControllerIntegrationTests {
 
     @Test
     void testGetMotorcycles() throws Exception {
-        mockMvc.perform(get("/motorcycle"))
+        mockMvc.perform(get("/motorcycle")
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[*].brand", Matchers.containsInAnyOrder("Honda", "Yamaha")));
@@ -86,6 +103,7 @@ public class MotorcycleControllerIntegrationTests {
                 + ", \"ownerId\": \"" + testOwner.getId().toString() + "\"}";
 
         mockMvc.perform(post("/motorcycle")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(finalPayload))
                 .andExpect(status().isOk())
@@ -101,7 +119,8 @@ public class MotorcycleControllerIntegrationTests {
     void testGetMotorcycleById() throws Exception {
         Motorcycle savedBike = motorcycleRepository.findAll().getFirst();
 
-        mockMvc.perform(get("/motorcycle/" + savedBike.getId()))
+        mockMvc.perform(get("/motorcycle/" + savedBike.getId())
+                        .header("Authorization", "Bearer " + adminToken)) // 🔥 Token added
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedBike.getId().toString()))
                 .andExpect(jsonPath("$.brand").value(savedBike.getBrand()));
@@ -116,6 +135,7 @@ public class MotorcycleControllerIntegrationTests {
                 + ", \"ownerId\": \"" + testOwner.getId().toString() + "\"}";
 
         mockMvc.perform(put("/motorcycle/" + savedBike.getId())
+                        .header("Authorization", "Bearer " + adminToken) // 🔥 Token added
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(finalPayload))
                 .andExpect(status().isOk())
@@ -126,7 +146,8 @@ public class MotorcycleControllerIntegrationTests {
     void testDeleteMotorcycle() throws Exception {
         Motorcycle savedBike = motorcycleRepository.findAll().getFirst();
 
-        mockMvc.perform(delete("/motorcycle/" + savedBike.getId()))
+        mockMvc.perform(delete("/motorcycle/" + savedBike.getId())
+                        .header("Authorization", "Bearer " + adminToken)) // 🔥 Token added
                 .andExpect(status().isOk());
 
         assert(motorcycleRepository.findById(savedBike.getId()).isEmpty());
@@ -137,6 +158,7 @@ public class MotorcycleControllerIntegrationTests {
         String invalidJson = loadFixture("invalid_motorcycle.json");
 
         mockMvc.perform(post("/motorcycle")
+                        .header("Authorization", "Bearer " + adminToken) // 🔥 Token added
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
                 .andExpect(status().isBadRequest());

@@ -3,6 +3,11 @@
   width: min(480px, 90vw);
 }
 
+mat-form-field:first-of-type {
+  margin-top: 16px; 
+}
+
+
 .full-width {
   width: 100%;
   margin-bottom: 8px;

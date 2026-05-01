@@ -8,10 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -27,8 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Allow OPTIONS requests (for CORS preflight) and /login endpoint
-        if ("/login".equals(path) || "OPTIONS".equalsIgnoreCase(method)) {
+        if ("/login".equals(path) || "/person/forgot-password".equals(path) || "/person/reset-password".equals(path) || "OPTIONS".equalsIgnoreCase(method)) {
             log.info("Skipping JWT filter for path: {} and method: {}", path, method);
             filterChain.doFilter(request, response);
             return;
@@ -50,10 +53,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
+
+            String role = jwtUtil.extractRole(token);
+            String email = jwtUtil.extractEmail(token);
+
+            var auth = new UsernamePasswordAuthenticationToken(
+                    email, null, List.of(new SimpleGrantedAuthority(role)));
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
             filterChain.doFilter(request, response);
 
         } catch (JwtException e) {
-            // Token is invalid, log the error and set the response status
             log.error("Invalid JWT token: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

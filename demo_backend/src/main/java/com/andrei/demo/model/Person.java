@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,10 +23,12 @@ public class Person {
     @Column(name = "password", nullable = false)
     private String password;
 
-    private Integer age;
-
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    private Integer age;
+    private String resetCode;
+    private LocalDateTime resetCodeExpiresAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

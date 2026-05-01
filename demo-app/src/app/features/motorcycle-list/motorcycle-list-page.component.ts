@@ -53,7 +53,7 @@ export class MotorcycleListPageComponent {
 
   constructor() {
     this.store.load();
-    this.personService.getAll().pipe(takeUntilDestroyed()).subscribe(data => this.owners.set(data));
+    this.personService.getCustomers().pipe(takeUntilDestroyed()).subscribe(data => this.owners.set(data));
   }
 
   protected applyFilters(): void {

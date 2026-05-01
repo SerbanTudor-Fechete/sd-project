@@ -1,6 +1,7 @@
 package com.andrei.demo.repository;
 
 import com.andrei.demo.model.Person;
+import com.andrei.demo.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,13 +14,11 @@ import java.util.UUID;
 public interface PersonRepository extends JpaRepository<Person, UUID> {
     Optional<Person> findByEmail(String email);
     boolean existsByEmail(String email);
-    // JPA Derived Query
-    Optional<Person> findByEmailAndAge(String email, Integer age);
 
-    // find person whose name starts or ends with the given string:
-    // JPA derived query and JPQL query
+    List<Person> findByRole(Role role);
+
+    Optional<Person> findByEmailAndAge(String email, Integer age);
     @Query("SELECT p FROM Person p WHERE p.name LIKE ?1% OR p.name LIKE %?1")
     List<Person> findByNameApproximate(String name);
-
     List<Person> findByNameStartingWithOrNameEndingWith(String start, String end);
 }

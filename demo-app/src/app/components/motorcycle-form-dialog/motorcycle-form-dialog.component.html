@@ -41,15 +41,17 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Owner</mat-label>
-      <mat-select formControlName="ownerId" placeholder="Select an Owner">
+        <mat-select formControlName="ownerId">
         @for (owner of data.owners; track owner.id) {
-          <mat-option [value]="owner.id">{{ owner.name }} ({{ owner.email }})</mat-option>
+          <mat-option [value]="owner.id">
+            {{ owner.name }} ({{ owner.email }})
+          </mat-option>
+    }
+        </mat-select>
+        @if (form.controls.ownerId.touched && form.controls.ownerId.invalid) {
+          <mat-error>An owner is required</mat-error>
         }
-      </mat-select>
-      @if (form.controls.ownerId.hasError('required')) {
-        <mat-error>You must assign an owner to the motorcycle.</mat-error>
-      }
-    </mat-form-field>
+</mat-form-field>
 
   </form>
 </mat-dialog-content>

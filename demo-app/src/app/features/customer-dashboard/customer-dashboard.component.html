@@ -1,17 +1,77 @@
-<div class="dashboard-container">
-  <mat-card class="dashboard-card">
-    
-    <mat-card-header class="dashboard-header">
-      <mat-card-title>Customer Dashboard</mat-card-title>
-    </mat-card-header>
-    
-    <mat-card-content class="dashboard-content">
-      <p>Welcome Customer</p>
-    </mat-card-content>
-    
-    <mat-card-actions class="dashboard-actions">
-      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
-    </mat-card-actions>
-    
-  </mat-card>
+<div class="dashboard-wrapper">
+  
+  <header class="dashboard-header">
+    <div>
+      <h1 class="mat-headline-4 mb-0">My Garage</h1>
+      <p class="text-muted">Manage your motorcycles and service appointments.</p>
+    </div>
+    <button mat-stroked-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </header>
+
+  @if (dashboardStore.isLoading()) {
+    <div class="state-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading your appointments...</p>
+    </div>
+  }
+
+  @if (dashboardStore.errorMessage()) {
+    <div class="state-container error">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ dashboardStore.errorMessage() }}</p>
+    </div>
+  }
+
+  @if (!dashboardStore.isLoading() && !dashboardStore.errorMessage() && dashboardStore.appointments().length === 0) {
+    <div class="state-container">
+      <mat-icon class="empty-icon">two_wheeler</mat-icon>
+      <h2>No Appointments Found</h2>
+      <p>You don't have any service appointments scheduled yet.</p>
+    </div>
+  }
+
+  @if (!dashboardStore.isLoading() && dashboardStore.appointments().length > 0) {
+    <div class="appointment-grid">
+      @for (appt of dashboardStore.appointments(); track appt.id) {
+        <mat-card class="appt-card elevation-z4">
+          
+          <mat-card-header>
+            <div mat-card-avatar class="moto-avatar">
+              <mat-icon>two_wheeler</mat-icon>
+            </div>
+            <mat-card-title>{{ appt.motorcycle.brand }} {{ appt.motorcycle.model }}</mat-card-title>
+            <mat-card-subtitle>{{ appt.motorcycle.licensePlate }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="appt-details">
+            <div class="detail-row">
+              <span class="label"><mat-icon>calendar_today</mat-icon> Date:</span>
+              <span class="value">{{ appt.appointmentDate | date:'mediumDate' }}</span>
+            </div>
+
+          <div class="detail-row">
+            <span class="label"><mat-icon>build</mat-icon> Status:</span>
+  
+            <span class="status-text" [ngClass]="appt.status.toLowerCase()">
+              {{ appt.status | titlecase }}
+            </span>
+          </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="detail-row cost-row">
+              <span class="label">Total Cost:</span>
+              <span class="cost-value">
+                {{ (appt.totalCost || 0) | currency:'USD' }}
+              </span>
+            </div>
+          </mat-card-content>
+
+        </mat-card>
+      }
+    </div>
+  }
 </div>

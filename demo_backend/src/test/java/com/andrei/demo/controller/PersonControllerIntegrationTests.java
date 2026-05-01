@@ -58,9 +58,15 @@ public class PersonControllerIntegrationTests {
     }
 
     private void initializeAuthToken() {
-        Person authPerson = personRepository.findAll().stream().findFirst().orElseThrow(
-                () -> new IllegalStateException("No seeded person available for auth token"));
-        authToken = jwtUtil.createToken(authPerson);
+        Person adminUser = new Person();
+        adminUser.setName("Admin Test");
+        adminUser.setEmail("admin.test@test.com");
+        adminUser.setPassword("password");
+        adminUser.setAge(35);
+        adminUser.setRole(com.andrei.demo.model.Role.ADMIN);
+        adminUser = personRepository.save(adminUser);
+
+        authToken = jwtUtil.createToken(adminUser);
     }
 
     @Test
@@ -68,15 +74,16 @@ public class PersonControllerIntegrationTests {
         mockMvc.perform(get("/person")
                         .header("Authorization", "Bearer " + authToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()")
-                        .value(2))
+                .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[*].name",
-                        Matchers.containsInAnyOrder("John Doe", "Jane Doe")))
+                        Matchers.containsInAnyOrder("John Doe", "Jane Doe", "Admin Test")))
                 .andExpect(jsonPath("$[*].age",
-                        Matchers.containsInAnyOrder(30, 25)))
+                        Matchers.containsInAnyOrder(30, 25, 35)))
                 .andExpect(jsonPath("$[*].email",
                         Matchers.containsInAnyOrder(
-                                "john.doe@example.com", "jane.doe@example.com"
+                                "john.doe@example.com",
+                                "jane.doe@example.com",
+                                "admin.test@test.com"
                         )));
     }
 
@@ -114,7 +121,6 @@ public class PersonControllerIntegrationTests {
                 .andExpect(jsonPath("$.email")
                         .value("Email is required"));
     }
-
 
     private String loadFixture(String fileName) throws IOException {
         return Files.readString(Paths.get(FIXTURE_PATH + fileName));

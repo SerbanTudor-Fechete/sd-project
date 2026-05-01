@@ -4,6 +4,7 @@ import com.andrei.demo.config.ValidationException;
 import com.andrei.demo.model.Motorcycle;
 import com.andrei.demo.model.MotorcycleCreateDTO;
 import com.andrei.demo.model.Person;
+import com.andrei.demo.model.Role;
 import com.andrei.demo.repository.MotorcycleRepository;
 import com.andrei.demo.repository.PersonRepository;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,10 @@ public class MotorcycleService {
 
         Person owner = personRepository.findById(motorcycleCreateDTO.getOwnerId())
                 .orElseThrow(() -> new ValidationException("Owner with id " + motorcycleCreateDTO.getOwnerId() + " not found."));
+
+        if (owner.getRole() == Role.ADMIN) {
+            throw new ValidationException("Business Rule Violation: Admins cannot be assigned as motorcycle owners.");
+        }
 
         Motorcycle motorcycle = new Motorcycle();
         motorcycle.setBrand(motorcycleCreateDTO.getBrand());

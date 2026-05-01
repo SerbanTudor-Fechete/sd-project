@@ -2,19 +2,18 @@ package com.andrei.demo.service;
 
 import com.andrei.demo.config.Status;
 import com.andrei.demo.config.ValidationException;
-import com.andrei.demo.model.Motorcycle;
-import com.andrei.demo.model.Part;
-import com.andrei.demo.model.ServiceAppointment;
-import com.andrei.demo.model.ServiceAppointmentCreateDTO;
+import com.andrei.demo.model.*;
 import com.andrei.demo.repository.MotorcycleRepository;
 import com.andrei.demo.repository.PartRepository;
 import com.andrei.demo.repository.ServiceAppointmentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -62,14 +61,13 @@ public class ServiceAppointmentService {
         existingAppointment.setDescription(dto.getDescription());
         existingAppointment.setTotalCost(dto.getTotalCost());
         existingAppointment.setStatus(dto.getStatus());
-        existingAppointment.setMotorcycle(motorcycle); // <-- Update the motorcycle link
+        existingAppointment.setMotorcycle(motorcycle);
 
-        // Update parts list
         if (dto.getPartIds() != null && !dto.getPartIds().isEmpty()) {
             List<Part> parts = partRepository.findAllById(dto.getPartIds());
             existingAppointment.setPartsUsed(parts);
         } else {
-            existingAppointment.setPartsUsed(new ArrayList<>()); // Clear parts if none provided
+            existingAppointment.setPartsUsed(new ArrayList<>());
         }
 
         return appointmentRepository.save(existingAppointment);
@@ -85,4 +83,22 @@ public class ServiceAppointmentService {
         existingAppointment.setStatus(Status.valueOf(newStatus.toUpperCase()));
         return appointmentRepository.save(existingAppointment);
     }
+
+    @Transactional(readOnly = true)
+    public List<CustomerAppointmentDTO> getAppointmentsForUser(String email) {
+        List<ServiceAppointment> appointments = appointmentRepository.findByMotorcycle_Owner_Email(email);
+
+        return appointments.stream().map(apt -> new CustomerAppointmentDTO(
+                apt.getId(),
+                apt.getScheduleDate(),
+                apt.getStatus().name(),
+                apt.getTotalCost(),
+                new MotorcycleSummaryDTO(
+                        apt.getMotorcycle().getBrand(),
+                        apt.getMotorcycle().getModel(),
+                        apt.getMotorcycle().getLicensePlate()
+                )
+        )).collect(Collectors.toList());
+    }
+
 }

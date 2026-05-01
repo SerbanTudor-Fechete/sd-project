@@ -9,11 +9,13 @@ import { authGuard, adminGuard, guestGuard } from './guards/auth.guard';
 import { MotorcycleListPageComponent } from './features/motorcycle-list/motorcycle-list-page.component';
 import { PartListPageComponent } from './features/part-list/part-list-page.component';
 import { AppointmentListPageComponent } from './features/appointment-list/appointment-list-page.component';
+import { ForgotPasswordComponent } from './features/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
   
   { path: 'people', component: PersonListPageComponent, canActivate: [adminGuard] },
   { path: 'motorcycles', component: MotorcycleListPageComponent, canActivate: [adminGuard] },

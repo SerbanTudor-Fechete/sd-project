@@ -38,10 +38,9 @@ public class JwtUtil {
                 .issuedAt(getCurrentDate())
                 .claims(Map.of(
                         "userId", person.getId(),
-                        "role", "ADMIN"
+                        "role", person.getRole().name()
                 ))
-                // the token will be expired in 10 hours
-                .expiration(new Date(System.currentTimeMillis() + 1000* 60 * 60 *10))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
@@ -84,4 +83,11 @@ public class JwtUtil {
         return true;
     }
 
+    public String extractEmail(String token) {
+        return getAllClaimsFromToken(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return getAllClaimsFromToken(token).get("role", String.class);
+    }
 }

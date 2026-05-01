@@ -120,4 +120,8 @@ export class LoginStore {
     this.errorMessage.set(errorMessage);
     sessionStorage.removeItem(STORAGE_KEY);
   }
+
+  clearError(): void {
+  this.errorMessage.set(null);
+  }
 }

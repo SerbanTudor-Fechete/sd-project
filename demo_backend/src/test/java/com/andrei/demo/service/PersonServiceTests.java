@@ -84,37 +84,33 @@ class PersonServiceTests {
 
     @Test
     void testUpdatePerson() throws ValidationException {
-        // given:
         UUID uuid = UUID.randomUUID();
         Person existingPerson = new Person();
         existingPerson.setId(uuid);
         existingPerson.setName("John");
         existingPerson.setAge(30);
         existingPerson.setEmail("john@example.com");
-        existingPerson.setPassword("old-hash");
+        existingPerson.setPassword("permanent-hash");
 
         Person updatePayload = new Person();
-        updatePayload.setId(uuid);
         updatePayload.setName("Jane");
         updatePayload.setAge(25);
         updatePayload.setEmail("jane@example.com");
-        updatePayload.setPassword("newpassword");
 
         when(personRepository.findById(uuid)).thenReturn(Optional.of(existingPerson));
-        when(passwordUtil.hashPassword("newpassword")).thenReturn("new-hash");
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when:
         Person result = personService.updatePerson(uuid, updatePayload);
 
-        // then:
         assertEquals("Jane", result.getName());
         assertEquals(25, result.getAge());
         assertEquals("jane@example.com", result.getEmail());
-        assertEquals("new-hash", result.getPassword());
+        assertEquals("permanent-hash", result.getPassword());
+
         verify(personRepository, times(1)).findById(uuid);
-        verify(passwordUtil, times(1)).hashPassword("newpassword");
         verify(personRepository, times(1)).save(any(Person.class));
+
+        verify(passwordUtil, never()).hashPassword(anyString());
     }
 
     @Test

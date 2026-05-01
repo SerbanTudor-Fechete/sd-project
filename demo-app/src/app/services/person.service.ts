@@ -13,6 +13,10 @@ export class PersonService {
     return this.http.get<Person[]>(API_URL);
   }
 
+  getCustomers(): Observable<Person[]> {
+    return this.http.get<Person[]>(`${API_URL}/customers`);
+  }
+
   create(dto: CreatePersonDto): Observable<Person> {
     return this.http.post<Person>(API_URL, dto);
   }
