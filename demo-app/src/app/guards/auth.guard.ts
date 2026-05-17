@@ -6,7 +6,16 @@ export const authGuard: CanActivateFn = () => {
   const loginStore = inject(LoginStore);
   const router = inject(Router);
 
-  return loginStore.isAuthenticated() ? true : router.createUrlTree(['/login']);
+  if (!loginStore.isAuthenticated()) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (loginStore.role() === 'ADMIN') {
+    alert('Access Denied: Admins must use the Admin Panel.');
+    return router.createUrlTree(['/people']);
+  }
+
+  return true;
 };
 
 export const adminGuard: CanActivateFn = () => {

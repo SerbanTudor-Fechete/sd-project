@@ -1,0 +1,30 @@
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: demo_database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=test-person
+      - POSTGRES_USER=test_oop
+      - POSTGRES_PASSWORD=test_oop
+
+  backend:
+    build: ./demo_backend
+    container_name: demo_backend
+    ports:
+      - "8443:8443"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/test-person
+      - SPRING_DATASOURCE_USERNAME=test_oop
+      - SPRING_DATASOURCE_PASSWORD=test_oop
+
+  frontend:
+    build: ./demo-app
+    container_name: demo_frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend

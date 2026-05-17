@@ -49,5 +49,14 @@ public class GlobalExceptionHandler {
         log.error("Custom Validation error: {}", errorMap);
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public Map<String, String> handleAllUncaughtExceptions(Exception ex) {
+        log.error("Unknown critical error occurred: ", ex);
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", "An unexpected system error occurred. Please try again later.");
+        return errorMap;
+    }
 }
 

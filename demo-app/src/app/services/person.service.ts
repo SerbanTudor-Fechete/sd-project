@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreatePersonDto, Person, UpdatePersonDto } from '../models/person.model';
 
-const API_URL = 'http://localhost:8080/person';
+const API_URL = 'https://localhost:8443/person';
 
 @Injectable({ providedIn: 'root' })
 export class PersonService {

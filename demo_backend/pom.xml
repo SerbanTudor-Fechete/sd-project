@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.3</version>
+		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.andrei</groupId>
@@ -27,7 +27,8 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>25</java.version>
+		<java.version>21</java.version>
+		<start-class>com.andrei.demo.DemoApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,6 +47,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.7.10</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -104,6 +106,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext7-core</artifactId>
+			<version>9.6.0</version>
+			<type>pom</type>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -131,6 +139,23 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>10.0.4</version> <configuration>
+				<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+				<nvdApiKey>cde8fcc3-fde8-4864-a196-41dec9a77643</nvdApiKey>
+				<nvdApiDelay>6000</nvdApiDelay>
+				<failBuildOnCVSS>11</failBuildOnCVSS>
+			</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

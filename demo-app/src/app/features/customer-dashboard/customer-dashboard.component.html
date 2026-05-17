@@ -70,6 +70,16 @@
             </div>
           </mat-card-content>
 
+          @if (appt.status === 'COMPLETED') {
+            <mat-divider></mat-divider>
+            <mat-card-actions align="end" style="padding: 16px;">
+              <button mat-flat-button color="primary" (click)="downloadInvoice(appt.id)">
+                <mat-icon>picture_as_pdf</mat-icon>
+                Download Invoice
+              </button>
+            </mat-card-actions>
+          }
+
         </mat-card>
       }
     </div>

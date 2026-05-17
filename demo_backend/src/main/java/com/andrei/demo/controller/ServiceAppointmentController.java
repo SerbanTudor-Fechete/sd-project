@@ -5,6 +5,11 @@ import com.andrei.demo.model.CustomerAppointmentDTO;
 import com.andrei.demo.model.ServiceAppointment;
 import com.andrei.demo.model.ServiceAppointmentCreateDTO;
 import com.andrei.demo.service.ServiceAppointmentService;
+import com.andrei.demo.service.PdfService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +25,7 @@ import java.util.UUID;
 public class ServiceAppointmentController {
 
     private final ServiceAppointmentService appointmentService;
+    private final PdfService pdfService;
 
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @GetMapping("/appointment/my-appointments")
@@ -62,4 +68,17 @@ public class ServiceAppointmentController {
     public ServiceAppointment updateAppointmentStatus(@PathVariable UUID uuid, @RequestBody String newStatus) {
         return appointmentService.updateAppointmentStatus(uuid, newStatus);
     }
+
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    @GetMapping("/appointment/{uuid}/invoice")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable UUID uuid) {
+        byte[] pdfBytes = pdfService.generateInvoice(uuid);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice-" + uuid + ".pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
 }

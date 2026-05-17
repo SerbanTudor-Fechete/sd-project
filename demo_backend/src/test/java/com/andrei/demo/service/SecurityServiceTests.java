@@ -83,7 +83,7 @@ class SecurityServiceTests {
         LoginResponse result = securityService.login(email, password);
 
         assertFalse(result.success());
-        assertEquals("Incorrect password", result.errorMessage());
+        assertEquals("Invalid email or password", result.errorMessage());
         verify(personRepository, times(1)).findByEmail(email);
         verify(passwordUtil, times(1)).checkPassword(password, person.getPassword());
         verify(jwtUtil, never()).createToken(any(Person.class));
@@ -98,7 +98,7 @@ class SecurityServiceTests {
         LoginResponse result = securityService.login(email, password);
 
         assertFalse(result.success());
-        assertEquals("Person with email " + email + " not found", result.errorMessage());
+        assertEquals("Invalid email or password", result.errorMessage());
         verify(personRepository, times(1)).findByEmail(email);
         verifyNoInteractions(passwordUtil, jwtUtil);
     }

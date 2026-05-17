@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateMotorcycleDto, Motorcycle, UpdateMotorcycleDto } from '../models/motorcycle.model';
 
-const API_URL = 'http://localhost:8080/motorcycle';
+const API_URL = 'https://localhost:8443/motorcycle';
 
 @Injectable({ providedIn: 'root' })
 export class MotorcycleService {

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreatePartDto, Part, UpdatePartDto } from '../models/part.model';
 
-const API_URL = 'http://localhost:8080/part'; 
+const API_URL = 'https://localhost:8443/part'; 
 
 @Injectable({ providedIn: 'root' })
 export class PartService {

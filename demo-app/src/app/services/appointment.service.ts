@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateAppointmentDto, ServiceAppointment, UpdateAppointmentDto } from '../models/appointment.model';
 
-const API_URL = 'http://localhost:8080/appointment'; 
+const API_URL = 'https://localhost:8443/appointment'; 
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
